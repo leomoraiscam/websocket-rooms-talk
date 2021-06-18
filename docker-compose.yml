@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+  mongo:
+    image: mongo
+    container_name: chat_persist
+    restart: always
+    environment:
+      - MONGODB_DATABASE=conversations
+    ports:
+      - 17017:27017
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
+    driver: local
+
