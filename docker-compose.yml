@@ -8,7 +8,7 @@ services:
     environment:
       - MONGODB_DATABASE=conversations
     ports:
-      - 17017:27017
+      - 15017:27017
     volumes:
       - mongo-data:/data/db
 
