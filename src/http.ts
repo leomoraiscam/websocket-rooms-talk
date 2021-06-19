@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import express from 'express';
 import path from 'path';
 import { createServer } from 'http';
@@ -8,7 +9,7 @@ const app = express();
 
 const httpServer = createServer(app);
 
-mongoose.connect("mongodb://localhost/conversations", {
+mongoose.connect("mongodb://localhost:15017/conversations", {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
