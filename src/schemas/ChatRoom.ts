@@ -15,7 +15,7 @@ const ChatRoomSchema = new Schema({
     }
   ],
   idChatRoom: {
-    Type: String,
+    type: String,
     default: uuidv4()
   }
 })
