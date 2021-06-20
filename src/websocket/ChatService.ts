@@ -4,6 +4,7 @@ import CreateUserService from '../services/CreateUserService';
 import ListUsersService from '../services/ListUsersService';
 import CreateChatRoomService from '../services/CreateChatRoomService';
 import GetUserBySocketIdService from '../services/GetUserBySocketIdService';
+import GetChatRoomByUsersService from '../services/GetChatRoomByUsersServices';
 
 io.on("connect", (socket) => {
   socket.on("start", async (data) => {
@@ -33,15 +34,21 @@ io.on("connect", (socket) => {
   socket.on("start_chat", async (data, callback) => {
     const createChatRoomService = container.resolve(CreateChatRoomService);
     const getUserBySocketIdService = container.resolve(GetUserBySocketIdService);
+    const getChatRoomByUsersService = container.resolve(GetChatRoomByUsersService);
 
     const userLogged = await getUserBySocketIdService.execute(socket.id)
 
-    const room = await createChatRoomService.execute([
+    let room = await getChatRoomByUsersService.execute([
       data.idUser, 
       userLogged._id
-    ]);
-  
-    console.log('room', room);
+    ])
+
+    if(!room) {
+      room = await createChatRoomService.execute([
+        data.idUser, 
+        userLogged._id
+      ]);  
+    }
 
     callback(room)
   });
