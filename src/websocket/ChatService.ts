@@ -5,6 +5,8 @@ import ListUsersService from '../services/ListUsersService';
 import CreateChatRoomService from '../services/CreateChatRoomService';
 import GetUserBySocketIdService from '../services/GetUserBySocketIdService';
 import GetChatRoomByUsersService from '../services/GetChatRoomByUsersServices';
+import CreateMessageService from '../services/CreateMessageService';
+
 
 io.on("connect", (socket) => {
   socket.on("start", async (data) => {
@@ -50,6 +52,28 @@ io.on("connect", (socket) => {
       ]);  
     }
 
+    socket.join(room.idChatRoom);
+
     callback(room)
   });
+
+
+  socket.on("message", async data => {
+    const getUserBySocketIdService = container.resolve(GetUserBySocketIdService);
+    const createMessageService = container.resolve(CreateMessageService);
+
+    const user = await getUserBySocketIdService.execute(socket.id);
+    const message = await createMessageService.execute({
+      to: user.id,
+      text: data.message,
+      roomId: data.idChatRoom
+    });
+
+    console.log('m', message)
+
+    io.to(data.idChatRoom).emit("message", {
+      message,
+      user
+    })
+  })
 })
