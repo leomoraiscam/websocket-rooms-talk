@@ -38,8 +38,24 @@ function onLoad() {
   })
 
   socket.on('message', (data) => {
-    console.log('message [s-on]', data)
+    addMessage(data);
   })
+}
+
+function addMessage(data) {
+  const divMessageUser = document.getElementById('message_user');
+  divMessageUser.innerHTML += `
+    <span class="user_name user_name_date">
+      <img
+        class="img_user"
+        src=${data.user.avatar}
+      />
+    <strong>${data.user.name}&nbsp;</strong>
+    <span>${new Date(data.message.created_at).toLocaleDateString('pt')}</span></span>
+    <div class="messages">
+      <span class="chat_message">${data.message.text}</span>
+    </div>
+  `;
 }
 
 function addUser(user) {
@@ -62,8 +78,17 @@ function addUser(user) {
 document.getElementById("users_list").addEventListener('click', (event) => {
   if (event.target && event.target.matches("li.user_name_list")) {
     const idUser = event.target.getAttribute("idUser")
-    socket.emit('start_chat', {idUser} ,(data) => {
-      idChatRoom = data.idChatRoom;
+    socket.emit('start_chat', {idUser} ,(response) => {
+      idChatRoom = response.room.idChatRoom;
+
+      response.messages.forEach((message) => {
+        const data = {
+          message,
+          user: message.to
+        }
+
+        addMessage(data);
+      })
     })
   }
 })
